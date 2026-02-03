@@ -1,0 +1,124 @@
+services:
+  namenode:
+    image: cjj2010/hadoop:3.3.6
+    container_name: namenode-tp7
+    hostname: hdfs-namenode
+    ports:
+      - "9870:9870"   # Interface web NameNode
+      - "8088:8088"   # Interface web YARN
+    command: >
+      bash -c "hdfs namenode & yarn resourcemanager"
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+    networks:
+      - spark-network
+
+  datanode1:
+    image: cjj2010/hadoop:3.3.6
+    container_name: datanode1-tp7
+    hostname: hdfs-datanode1
+    depends_on:
+      - namenode
+    command: >
+      bash -c "hdfs datanode & yarn nodemanager"
+    networks:
+      - spark-network
+
+  datanode2:
+    image: cjj2010/hadoop:3.3.6
+    container_name: datanode2-tp7
+    hostname: hdfs-datanode2
+    depends_on:
+      - namenode
+    command: >
+      bash -c "hdfs datanode & yarn nodemanager"
+    networks:
+      - spark-network
+
+  secondarynamenode:
+    image: cjj2010/hadoop:3.3.6
+    container_name: secondarynamenode-tp7
+    hostname: hdfs-secondarynamenode
+    depends_on:
+      - namenode
+    command: >
+      bash -c "hdfs secondarynamenode"
+    networks:
+      - spark-network
+
+  # Client HDFS pour interagir avec le cluster
+  hdfs-client:
+    image: cjj2010/hadoop:3.3.6
+    container_name: hdfs-client-tp7
+    hostname: hdfs-hdfs-client
+    depends_on:
+      - namenode
+    volumes:
+      - ./data:/data
+      - ./core-site.xml:/opt/hadoop-3.3.6/etc/hadoop/core-site.xml:ro
+    command: tail -f /dev/null
+    networks:
+      - spark-network
+
+  spark-master:
+    image: apache-spark:3.4.0
+    container_name: spark-master-tp7
+    ports:
+      - "8080:8080" # Web UI Master
+      - "7077:7077" # Spark Master Port
+      - "9999:9999" #port for socket Data
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+    volumes:
+      - ./apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+    networks:
+      - spark-network
+
+  spark-worker-a:
+    image: apache-spark:3.4.0
+    container_name: spark-worker-a-tp7
+    ports:
+      - "8081:8081" # Web UI Worker
+      - "7001:7000" # Spark Worker Port
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_EXECUTOR_MEMORY=1G
+    volumes:
+      - ./apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+    networks:
+      - spark-network
+
+  spark-worker-b:
+    image: apache-spark:3.4.0
+    container_name: spark-worker-b-tp7
+    ports:
+      - "8082:8081" # Web UI Worker
+      - "7002:7000" # Spark Worker Port
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-b
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_EXECUTOR_MEMORY=1G
+    volumes:
+      - ./apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+    networks:
+      - spark-network
+  
+networks:
+  spark-network:
+    name: spark-network
+    driver: bridge
