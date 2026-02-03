@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: tp2_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: books
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysqld
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -proot || exit 1"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 20
+
+  api:
+    build: ./api
+    container_name: tp2_api
+    environment:
+      DB_HOST: db 
+      DB_USER: root 
+      DB_PASSWORD: root 
+      DB_DB: books
+    ports:
+      - "5001:8000"
+    depends_on: 
+      db: 
+        condition: service_healthy
+
+volumes:
+  db_data:

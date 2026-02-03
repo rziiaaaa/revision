@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title> Books API Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: linear-gradient(120deg, #007bff, #6610f2);
+      color: white;
+      border-radius: 0 0 2rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .list-group-item a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 500;
+    }
+    .list-group-item a:hover {
+      text-decoration: underline;
+    }
+    table th {
+      background: #343a40;
+      color: #fff;
+    }
+    table td, table th {
+      vertical-align: middle;
+    }
+    footer {
+      margin-top: 3rem;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📚 Books API</h1>
+    <p>Mini tableau de bord pour explorer vos données de livres</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Liens vers les endpoints -->
+    <div class="card mb-5">
+      <div class="card-header bg-primary text-white">
+         Endpoints disponibles
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><a href="/books?format=html" target="_blank"> Liste des livres</a></li>
+        <li class="list-group-item"><a href="/publishers/ca" target="_blank"> Chiffre d’affaires par éditeur</a></li>
+        <li class="list-group-item"><a href="/sales/variation" target="_blank"> Variation des ventes 2015 → 2016</a></li>
+      </ul>
+    </div>
+
+
+
+  </div>
+
+  <footer>
+    Books API &copy; {{ 2025 }} – Démo Flask + MySQL  
+  </footer>
+
+</body>
+</html>
